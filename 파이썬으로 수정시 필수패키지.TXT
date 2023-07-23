@@ -1,0 +1,12 @@
+
+pip install pywin32
+
+pip install tk
+
+pip install shutil
+
+pip install timedelta
+
+pip install pandas
+
+pip install openpyxl
