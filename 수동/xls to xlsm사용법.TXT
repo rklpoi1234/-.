@@ -1,0 +1,12 @@
+!!! 필수로 설치해야됩니다.
+
+win32API 가있어야됩니다.
+
+cmd에서 pip install pywin32 엔터하면 확장이설치됩니다.
+
+오른쪽클릭 -> edit idle ->idle...을눌러 fname = ''  ''안에 변환시킬 xls파일이름을넣습니다. 저장 후 실행
+
+
+pip install pandas
+
+pip install openpyxl
