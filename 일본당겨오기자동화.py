@@ -3,6 +3,7 @@ import tkinter as tk
 import pandas as pd
 import win32com.client
 import datetime
+import re
 from tkinter import filedialog, Label, Entry, Button, StringVar, messagebox
 from shutil import copy2
 
@@ -11,7 +12,7 @@ allowed_orders = []
 order_type_mapping = {
     '관리자(액자)': 'AdminClaim', '베젤': 'Bezel', '아뜨레앨범': 'attreAlbum', '베네핏': 'Benefit','네이쳐': 'Nature'
    , '베네핏멀티': 'BenefitMulti', '베네핏화이트': 'BenefitWhite', '비트로': 'Bitro', '끌레르': 'Clair',
-    '끌레르CD케이스': 'ClairCDCase', '네이쳐아크': 'NatureArc', '뉴욕갤러리': 'NWGallery',
+    '끌레르CD케이스': 'ClairCDCase', '네이쳐아크': 'NatureArc', '뉴욕갤러리': 'NWGallery', '빌리프우드': 'Beliefwood',
     '모던우드': 'Modernwood', '밀키': 'Milky', '프라임우드': 'Primewood', '프리즘': 'Prism', '스페셜베젤': 'SpecialBezel',
     '틴케이': 'TinK', '유니크아크': 'UniqueArc', '갤럭시': 'Galaxy', '지아크': 'GArc'
     # 여기에 추가적인 매핑 정보를 추가할 수 있습니다.
@@ -102,7 +103,7 @@ def execute_process(excel_file: str, option: str,user_time: str):
     user_date = datetime.datetime.strptime(user_time, "%H:%M").time()
     
     if option == "일본":
-        allowed_orders = ['AdminClaim','attreAlbum','Benefit','BenefitMulti','BenefitWhite','Bezel','Bitro','Clair','ClairCDCase','Nature','NatureArc','NWGallery','Mordernwood','Milky','Primewood','Prism','SpecialBezel','TinK','UniqueArc','Galaxy','GArc']
+        allowed_orders = ['AdminClaim','arttreAlbum','Benefit','BenefitMulti','BenefitWhite','Bezel','Bitro','Clair','ClairCDCase','Nature','NatureArc','NWGallery','Modernwood','Milky','Primewood','Prism','SpecialBezel','TinK','UniqueArc','Galaxy','GArc']
         messagebox.showinfo("알림", "일본껀 주문 취소 제외가 안되기 때문에 DPCS 내 확인 바랍니다.")
     else:
         print("올바르지 않은 옵션입니다.")
@@ -149,15 +150,16 @@ def execute_process(excel_file: str, option: str,user_time: str):
             target_sub_folder = ""
 
         order_no = str(row['주문번호']) #주문번호 획득
+        order_no = re.sub(r"\s*\([^()]*\)", "", order_no) #주문번호에 괄호제거
         # 소스 폴더를 영어 주문종류로 설정 #일본 다운 폴더 주소를 입력해주세요
-        source_folder = os.path.join(r"C:/Users/whoami/Desktop/1차,2차,일본당겨오기스크립트/실험용", excel_date, order_type)
+        source_folder = os.path.join("Y:\\", excel_date, order_type)
         
         print(source_folder)
         if target_sub_folder in ["당일", "기타"]:
             # 소스 폴더를 영어 주문종류로 설정
-            target_folder = os.path.join(r"C:\아크릴작업", target_sub_folder, order_type)
+            target_folder = os.path.join(r"E:\아크릴작업", target_sub_folder, order_type)
         else:
-            target_folder = os.path.join(r"C:\아크릴작업", order_type)
+            target_folder = os.path.join(r"E:\아크릴작업", order_type)
         
         copy_files(source_folder, target_folder, order_no, row["출고예정"])
 

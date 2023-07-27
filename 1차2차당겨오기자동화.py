@@ -3,6 +3,7 @@ import tkinter as tk
 import pandas as pd
 import win32com.client
 import datetime
+import re
 from tkinter import filedialog, Label, Entry, Button, StringVar, messagebox
 from shutil import copy2
 
@@ -84,12 +85,13 @@ def execute_process(excel_file: str, option: str):
     #프로세스
     #액자가 달라지거나 수정이필요할시 []배열안에 추가,변경바람
     global allowed_orders
-    classification_conditions = ['604(라미)5번', '라미코팅', '우드끌레르', '마트', '602(마트)4번'] #2차 은화지 은염할것들을 당일,기타로 따로또 분류하기위해
+    # '602(마트)4번' 가타은염제외
+    classification_conditions = ['604(라미)5번', '라미코팅', '우드끌레르', '마트'] #2차 은화지 은염할것들을 당일,기타로 따로 또 분류하기위해
     
     if option == "1차":
         allowed_orders = ['끌레르액자','N끌레르','기본액자','베이직액자','마틸스']
     elif option == "2차":
-        allowed_orders = ['뉴욕갤러리','PAS','N디아섹','디아섹','빌리프우드','빌리프데코','프라임우드','프라임데코','캔버스액자','캔버스(무광)액자','메탈라인','원목액자','모던우드','패브릭데코','루이','빌트랩','아트플러스','프리즘','프리모(마트)','엣지우드','파인아트','이태리(골드)','이태리(화이트)','블랙갤러리']
+        allowed_orders = ['뉴욕갤러리','PAS','N디아섹','디아섹','빌리프우드','빌리프데코','프라임우드','프라임데코','캔버스액자','캔버스(무광)액자','메탈라인','원목액자','모던우드','패브릭데코','루이','빌트랩','아트플러스','프리즘','프리모(마트)','엣지우드','파인아트','이태리(골드)','이태리(화이트)','블랙갤러리','감성사진관']
     else:
         print("올바르지 않은 옵션입니다.")
         return
@@ -115,6 +117,7 @@ def execute_process(excel_file: str, option: str):
     tomorrow = today + datetime.timedelta(days=1)
 
     for index, row in filtered_df.iterrows():
+        #order_type = re.sub(r"\([^0]*\)","",order_type)
         order_type = row["주문종류"] #order_type에 주문종류행을 돌면서 찾는다
 
         if order_type not in allowed_orders:
@@ -131,13 +134,16 @@ def execute_process(excel_file: str, option: str):
         else:
             target_sub_folder = ""
 
+        
         order_no = str(row['주문번호']) #주문번호 획득
-        source_folder = os.path.join(r"C:/Users/whoami/Desktop/1차,2차,일본당겨오기스크립트/실험용", excel_date, order_type)
+        order_no = re.sub(r"\s*\([^()]*\)", "", order_no) #주문번호에 괄호공백제거
+        
+        source_folder = os.path.join(r"\\arttre-down\tmp_client", excel_date, order_type)
         
         if target_sub_folder in ["당일", "기타"]:
-            target_folder = os.path.join(r"C:\아크릴작업", target_sub_folder, order_type)
+            target_folder = os.path.join(r"E:\아크릴작업", target_sub_folder, order_type)
         else:
-            target_folder = os.path.join(r"C:\아크릴작업", order_type)
+            target_folder = os.path.join(r"E:\아크릴작업", order_type)
         
         copy_files(source_folder, target_folder, order_no, row["출고예정"])
 
